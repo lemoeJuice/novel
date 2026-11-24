@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="paper">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>原创小说馆 · Novel Archive</title>
+<style>
+:root {
+  --bg: #FAF8F5;
+  --surface: #F2EFE9;
+  --surface-2: #EAE6DF;
+  --ink: #1F242B;
+  --muted: #5C6876;
+  --border: #DDD8CE;
+  --accent: #9E473B;
+  --accent-soft: rgba(158, 71, 59, 0.10);
+  --ice: #5E81AC;
+  --font-serif: "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
+  --font-sans: "Noto Sans CJK SC", "PingFang SC", system-ui, -apple-system, sans-serif;
+  --font-mono: "Maple Mono NF CN", "Noto Sans Mono CJK SC", ui-monospace, SFMono-Regular, monospace;
+}
+
+html[data-theme="night"] {
+  --bg: #14181F;
+  --surface: #1B212B;
+  --surface-2: #242C38;
+  --ink: #D4DCE6;
+  --muted: #8B98A9;
+  --border: #2B3442;
+  --accent: #C96B5D;
+  --accent-soft: rgba(201, 107, 93, 0.14);
+  --ice: #7AA2C7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 40px 24px 72px;
+}
+
+header.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+}
+
+.site-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.site-subtitle {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.theme-btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.theme-btn:hover {
+  background: var(--surface-2);
+}
+
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 0 20px;
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.section-heading span.count {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.novel-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  margin-bottom: 48px;
+}
+
+.novel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+
+.novel-card:hover {
+  border-color: var(--accent);
+}
+
+.novel-card--upcoming {
+  border-style: dashed;
+  background: transparent;
+  opacity: 0.72;
+}
+
+.novel-card--upcoming:hover {
+  border-color: var(--border);
+}
+
+.novel-meta-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  background: var(--surface-2);
+  color: var(--ink);
+  border: 1px solid var(--border);
+}
+
+.badge--accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.novel-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.novel-title small {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 8px;
+}
+
+.novel-desc {
+  margin: 0;
+  font-family: var(--font-serif);
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.novel-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.novel-stats {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+.read-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  transition: opacity 0.15s ease;
+}
+
+.read-btn:hover {
+  opacity: 0.9;
+}
+
+.attestation-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px 28px;
+  margin-bottom: 40px;
+}
+
+.attestation-intro {
+  margin: 0 0 18px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.hash-record {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+
+.hash-record + .hash-record {
+  margin-top: 14px;
+}
+
+.hash-record-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.hash-record-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.hash-record-meta {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.hash-row {
+  display: grid;
+  grid-template-columns: 76px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.hash-row + .hash-row {
+  border-top: 1px dashed var(--border);
+}
+
+.hash-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.hash-value {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  word-break: break-all;
+  color: var(--ink);
+  user-select: all;
+}
+
+.copy-btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  color: var(--ink);
+  background: var(--surface-2);
+}
+
+footer.site-footer {
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+footer.site-footer a {
+  color: var(--ice);
+  text-decoration: none;
+}
+
+footer.site-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 24px 16px 56px;
+  }
+  .novel-card, .attestation-box {
+    padding: 20px;
+  }
+  .hash-row {
+    grid-template-columns: 1fr auto;
+  }
+  .hash-label {
+    grid-column: 1 / -1;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="site-header">
+    <div>
+      <h1 class="site-title">原创小说馆 · Novel Archive</h1>
+      <p class="site-subtitle">个人原创长篇与中短篇小说交互式阅读入口 · CC BY-NC-SA 4.0</p>
+    </div>
+    <div class="header-actions">
+      <button class="theme-btn" id="themeToggle" type="button" aria-label="切换阅读主题">夜间模式</button>
+    </div>
+  </header>
+
+  <main>
+    <h2 class="section-heading">
+      <span>作品目录</span>
+      <span class="count">1 部已上线</span>
+    </h2>
+
+    <section class="novel-grid" aria-label="小说列表">
+      <article class="novel-card">
+        <div class="novel-meta-top">
+          <span class="badge badge--accent">已完结</span>
+          <span class="badge">科幻 / 都市奇幻</span>
+          <span class="badge">CC BY-NC-SA 4.0</span>
+        </div>
+        <h3 class="novel-title">《休止符》</h3>
+        <p class="novel-desc">
+          在一个底层默认“同一物理系统在长期演化上只能保留唯一路径”的世界里，有一个从小被世界当成最后一把保险的人，也有一群后来花了很多年才学会与“没有最后一句”共处的普通人。
+        </p>
+        <div class="novel-footer">
+          <span class="novel-stats">74 章 · 约 24 万字 · 交互式典藏阅读器</span>
+          <a class="read-btn" href="./end-tag/">开始阅读 →</a>
+        </div>
+      </article>
+
+      <article class="novel-card novel-card--upcoming" aria-label="更多作品筹备中">
+        <div class="novel-meta-top">
+          <span class="badge">即将上线</span>
+        </div>
+        <h3 class="novel-title">更多作品筹备中</h3>
+        <p class="novel-desc">
+          后续完成的原创小说将陆续收录于此入口，并同步公布原稿数字指纹。
+        </p>
+      </article>
+    </section>
+
+    <h2 class="section-heading">
+      <span>版权存证 · 原文数字指纹</span>
+      <span class="count">Source Markdown Hashes</span>
+    </h2>
+
+    <section class="attestation-box" aria-label="版权存证哈希">
+      <p class="attestation-intro">
+        本站发布的交互式阅读器由原始 Markdown 全本构建而成。为进行版权存证与全文完整性校验，下方永久保留各作品原始 <code>.md</code> 全文文件的密码学哈希值（可通过 <code>sha256sum</code> / <code>sha512sum</code> 核验）。
+      </p>
+
+      <div class="hash-record">
+        <div class="hash-record-header">
+          <span class="hash-record-title">《休止符》— <code>《休止符》完整全本.md</code></span>
+          <span class="hash-record-meta">688,906 bytes · 8,430 lines · 2026-11-24</span>
+        </div>
+        <div class="hash-row">
+          <span class="hash-label">SHA-256</span>
+          <code class="hash-value" id="hash-endtag-sha256">c34a2c456c63b2c9223c9b70236985b436b7deacf668eedc2eeb753eeb713e81</code>
+          <button class="copy-btn" type="button" data-copy="hash-endtag-sha256">复制</button>
+        </div>
+        <div class="hash-row">
+          <span class="hash-label">SHA-512</span>
+          <code class="hash-value" id="hash-endtag-sha512">0d3c42254c0621fcc8e2006065c3054fdda32a16dfe6a5642ec3020cd8c3223b626a1a0b8afb07826588a8193fbd9ef8e68474f891c304337e7a8930753c0631</code>
+          <button class="copy-btn" type="button" data-copy="hash-endtag-sha512">复制</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      本站点收录作品均采用
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a>
+      协议发布（<a href="./LICENSE">查看 LICENSE</a>）。
+    </div>
+    <div>
+      版权存证页 · 仅保留原文 Hash
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var toggle = document.getElementById("themeToggle");
+  var saved = localStorage.getItem("novel_portal_theme");
+  if (saved === "night" || saved === "paper") {
+    root.setAttribute("data-theme", saved);
+  }
+  function updateLabel() {
+    var isNight = root.getAttribute("data-theme") === "night";
+    toggle.textContent = isNight ? "日间模式" : "夜间模式";
+  }
+  updateLabel();
+  toggle.addEventListener("click", function () {
+    var next = root.getAttribute("data-theme") === "night" ? "paper" : "night";
+    root.setAttribute("data-theme", next);
+    localStorage.setItem("novel_portal_theme", next);
+    updateLabel();
+  });
+
+  document.querySelectorAll(".copy-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var target = document.getElementById(btn.getAttribute("data-copy"));
+      if (!target) return;
+      navigator.clipboard.writeText(target.textContent.trim()).then(function () {
+        var orig = btn.textContent;
+        btn.textContent = "已复制";
+        setTimeout(function () { btn.textContent = orig; }, 1500);
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
